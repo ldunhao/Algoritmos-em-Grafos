@@ -428,26 +428,50 @@ int escolha_grafo(){
 int base(int w){
     for(int i=0;i<w;i++){
         for(int j=0;j<w;j++){
-            if(i==j) M_AUX[i][j] = 0;
-            else M_AUX[i][j] = 1;
+            if(i==j) G_criado[i][j] = 0;
+            else G_criado[i][j] = 1;
         }
     }
 }
 
-int Mycielsky(){
+int Mycielsky(int w, int num_crom){
 
     memset(G_criado,0,sizeof(G_criado));
-    memset(M_AUX,0,sizeof(M_AUX));
 
-    int num_crom=0,w=0;
+    int a1 = w + num_crom;
     bool ok;
     ok = false;
+
+    if(w == num_crom) base(w);
+    else {
+        Mycielsky(w,num_crom-1);
+        for(int i=0;i<a1;i++){
+            for(int j=0;j<a1;j++){
+                if(i==j) {
+                    G_criado[i][j] = 0; 
+                }else{
+                    if(i==0 && j<num_crom) G_criado[i][j] = 1;
+                    else if(j==0 && i<num_crom) G_criado[i][j] = 1;
+                    else {
+                        if(i>= num_crom && j>=num_crom) G_criado[i][j] = G_criado[i-num_crom][j-num_crom];
+                        else if(i>=num_crom) G_criado[i][j] = G_criado[i-num_crom][j-1];
+                        else if(j>=num_crom) G_criado[i][j] = G_criado[i-1][j-num_crom];
+                    }
+                }
+            }
+        }
+    }
+}
+
+int Call_Mycielsky(){
+    int w=0,num_crom=0;
+    bool ok;
+    ok=false;
 
     cout << "Digite o valor da clique maxima de G: ";
     cin >> w;
     cout << "Digite o valor do numero cromatico: ";
     cin >> num_crom;
-
     while(!ok){
         if (w > num_crom) {
             cout << "O numero cromatico tem que ser maior ou igual ao numero da clique" << endl;
@@ -458,32 +482,12 @@ int Mycielsky(){
         }
         else {ok = true; break;}
     }
-
-    if(w == num_crom) base(w), Print(M_AUX,w);
-    else {
-        int a1 = w + num_crom;
-        base(w);
-        for(int i=0;i<a1;i++){
-            for(int j=0;j<a1;j++){
-                if(i==j) {
-                    G_criado[i][j] = 0; 
-                }else{
-                    if(i==0 && j<num_crom) G_criado[i][j] = 1;
-                    else if(j==0 && i<num_crom) G_criado[i][j] = 1;
-                    else {
-                        if(i>= num_crom && j>=num_crom) G_criado[i][j] = M_AUX[i-num_crom][j-num_crom];
-                        else if(i>=num_crom) G_criado[i][j] = M_AUX[i-num_crom][j-1];
-                        else if(j>=num_crom) G_criado[i][j] = M_AUX[i-1][j-num_crom];
-                    }
-                }
-            }
-        }
-
-        Print(G_criado, a1);
-    }
-
-    
-
+    system("clear");
+    Mycielsky(w,num_crom);
+    cout << endl << endl;
+    if(w != num_crom) for(int i=0;i<(w+num_crom);i++) for(int j=0;j<(w+num_crom);j++) if(i>0 && i<num_crom && j>0 && j<num_crom) G_criado[i][j] = 0;
+    if(w == num_crom) Print(G_criado, w);
+    else Print(G_criado, w+num_crom);
 }
 
 // =====================================================
@@ -582,6 +586,7 @@ int Read_File(string filename){
 int main(void){
 
     int op,cubo,opcubo;
+    int w=0,num_crom=0;
     string Filename;
     bool ok = false;
     char tecla;
@@ -605,7 +610,6 @@ int main(void){
 
     while(op != 10){
         switch(op){
-
             case 1: system("clear");
                     cout << endl;
                     cout << endl;
@@ -695,7 +699,7 @@ int main(void){
             case 9: system("clear");
                     cout << endl;
                     cout << endl;
-                    Mycielsky();
+                    Call_Mycielsky();
                     cout << endl << endl << "Digite uma letra para continuar..." << endl;
                     cin >> tecla;
                     system("clear");
