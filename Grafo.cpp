@@ -5,7 +5,7 @@
 using namespace std;
 
 int G[MAXN][MAXN],G_criado[MAXN][MAXN], M_AUX[MAXN][MAXN];
-int tam_f=0,n;
+int tam_f=0,n,numv=0,k=0;
 vector<vector<int> > F;
 int cor[MAXN], vis[MAXN], C[MAXN]; 
 
@@ -94,15 +94,37 @@ int Cria_Arvore(){
 // COLORACAO PELO METODO GULOSO 
 // =====================================================
 
-// int greedy(){
-//     int k;
+int menor(int i){
+    int k=1,j=i;
 
-//     for(int i=0;i<n;i++){
-//         for(int j=0;j<n;j++){
+    while(j<i){
+        if(M_AUX[i][j]==k){
+            k++;
+            j=1;
+        }else j++;
+    }
 
-//         }
-//     }
-// }
+    return k;
+}
+
+int Greedy(){
+    
+    memset(C,0,sizeof(C));
+    memset(M_AUX,0,sizeof(M_AUX));
+
+    int k=1,i=0,F[MAXN];
+    C[0]=k; F[0]=1;
+
+    for(int j=0;i<n-1;i++){
+        if(G[i][j]==1) M_AUX[i][j]=k;
+    }
+    for(i=1;i<n-1;i++){
+        F[i]=menor(i);
+        for(int j=i;j<n-1;j++){
+            if(G[i][j]==1) M_AUX[i][j]=k;
+        }
+    }
+}
 
 // =====================================================
 // BIPARTICAO
@@ -425,41 +447,46 @@ int escolha_grafo(){
 // GRAFOS DE MYCIELSKY
 // =====================================================
 
-int base(int w){
-    for(int i=0;i<w;i++){
-        for(int j=0;j<w;j++){
-            if(i==j) G_criado[i][j] = 0;
-            else G_criado[i][j] = 1;
-        }
-    }
-}
-
 int Mycielsky(int w, int num_crom){
 
     memset(G_criado,0,sizeof(G_criado));
 
-    int a1 = w + num_crom;
     bool ok;
     ok = false;
 
-    if(w == num_crom) base(w);
-    else {
-        Mycielsky(w,num_crom-1);
-        for(int i=0;i<a1;i++){
-            for(int j=0;j<a1;j++){
-                if(i==j) {
-                    G_criado[i][j] = 0; 
-                }else{
-                    if(i==0 && j<num_crom) G_criado[i][j] = 1;
-                    else if(j==0 && i<num_crom) G_criado[i][j] = 1;
-                    else {
-                        if(i>= num_crom && j>=num_crom) G_criado[i][j] = G_criado[i-num_crom][j-num_crom];
-                        else if(i>=num_crom) G_criado[i][j] = G_criado[i-num_crom][j-1];
-                        else if(j>=num_crom) G_criado[i][j] = G_criado[i-1][j-num_crom];
-                    }
-                }
+    if(w == num_crom) {
+        for(int i=0;i<w;i++){
+            for(int j=0;j<w;j++){
+                if(i==j) G_criado[i][j] = 0;
+                else G_criado[i][j] = 1;
             }
         }
+        numv = w;
+    }
+    else {
+        Mycielsky(w,num_crom-1);
+        k = numv;
+        numv = 2*numv+1;
+        cout << "1: " << k << " " << "2: " << numv << endl;
+        for(int i=1;i<=k+1;i++){
+            for(int j=1;j<=k+1;j++){
+                G_criado[i+k][j+k] = G_criado[i-1][j-1];
+                if(j<=k)G_criado[i+k][j] = G_criado[i-1][j-1];
+                if(i<=k)G_criado[i][j+k] = G_criado[i-1][j-1];
+            }
+        }
+
+        for(int i=0;i<numv;i++){
+            for(int j=0;j<numv;j++){
+                if(i==0 && j<=k) G_criado[i][j]=1;
+                if(i==0 && j>k) G_criado[i][j]=0;
+                if(j==0 && i<=k) G_criado[i][j]=1;
+                if(j==0 && i>k) G_criado[i][j]=0;
+                if((i>0 && i<k+1) && (j>0 && j<k+1)) G_criado[i][j]=0;
+                if(i==j) G_criado[i][j]=0;
+            }
+        }
+
     }
 }
 
@@ -485,9 +512,8 @@ int Call_Mycielsky(){
     system("clear");
     Mycielsky(w,num_crom);
     cout << endl << endl;
-    if(w != num_crom) for(int i=0;i<(w+num_crom);i++) for(int j=0;j<(w+num_crom);j++) if(i>0 && i<num_crom && j>0 && j<num_crom) G_criado[i][j] = 0;
     if(w == num_crom) Print(G_criado, w);
-    else Print(G_criado, w+num_crom);
+    else Print(G_criado, numv);
 }
 
 // =====================================================
@@ -601,14 +627,15 @@ int main(void){
     cout << "7 - Checar se eh conexo" << endl;
     cout << "8 - Arvore Geradora" << endl;
     cout << "9 - Grafo de Mycielsky" << endl;
-    cout << "10 - Finalizar Programa" << endl;
+    cout << "10 - Coloracao" << endl;
+    cout << "11 - Finalizar Programa" << endl;
     cout << "Escolha: ";
     cin >> op;
     
 
-    if(op == 10) return 0;
+    if(op == 11) return 0;
 
-    while(op != 10){
+    while(op != 11){
         switch(op){
             case 1: system("clear");
                     cout << endl;
@@ -705,7 +732,17 @@ int main(void){
                     system("clear");
                     break;
 
-            case 10: break;
+            case 10: system("clear");
+                    cout << endl;
+                    cout << endl;
+                    Greedy();
+                    Print(M_AUX,n-1);
+                    cout << endl << endl << "Digite uma letra para continuar..." << endl;
+                    cin >> tecla;
+                    system("clear");
+                    break;
+
+            case 11: break;
                         
         }
         
@@ -719,7 +756,8 @@ int main(void){
         cout << "7 - Checar se eh conexo" << endl;
         cout << "8 - Arvore Geradora" << endl;
         cout << "9 - Grafo de Mycielsky" << endl;
-        cout << "10 - Finalizar Programa" << endl;
+        cout << "10 - Coloracao" << endl;
+        cout << "11 - Finalizar Programa" << endl;
         cout << "Escolha: ";
         cin >> op;
     }
