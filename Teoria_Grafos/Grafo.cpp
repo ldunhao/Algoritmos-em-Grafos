@@ -13,7 +13,7 @@ int cor[MAXN], vis[MAXN], C[MAXN];
 // PRINT
 // =====================================================
 
-int Print(int M[1010][1010], int n){
+void Print(int M[1010][1010], int n){
     for(int i=0;i<n;i++){
         for(int j=0;j<n;j++){
             cout << M[i][j] << " ";
@@ -64,7 +64,7 @@ void checa_conexo(){
 //     return retorna;
 // }
 
-int Cria_Arvore(){
+void Cria_Arvore(){
     memset(G_criado,0,sizeof(G_criado));
 
     for(int i=0;i<n;i++) C[i] = i;
@@ -107,7 +107,7 @@ int menor(int i){
     return k;
 }
 
-int Greedy(){
+void Greedy(){
     
     memset(C,0,sizeof(C));
     memset(M_AUX,0,sizeof(M_AUX));
@@ -180,7 +180,7 @@ bool checa_bipartido(){
 // CRIACAO OS GRAFOS
 // =====================================================
 
-int n_cubo(int x){
+void n_cubo(int x){
     int tam_cubo = pow(2,x);
     memset(G_criado,0,sizeof(G_criado));
 
@@ -202,7 +202,7 @@ int n_cubo(int x){
     }
 }
 
-int Kn(int x){
+void Kn(int x){
     memset(G_criado,0,sizeof(G_criado));
     for(int i=0;i<x;i++){
         for(int j=0;j<x;j++){
@@ -211,7 +211,7 @@ int Kn(int x){
     }
 }
 
-int Pn(int x){
+void Pn(int x){
     memset(G_criado,0,sizeof(G_criado));
     for(int i=0;i<x;i++) {
         if(i!=x-1)G_criado[i][i+1] = 1;
@@ -219,7 +219,7 @@ int Pn(int x){
     }
 }
 
-int Cn(int x){
+void Cn(int x){
     memset(G_criado,0,sizeof(G_criado));
     for(int i=0;i<x;i++) {
         if(i>0) G_criado[i][i-1] = 1;
@@ -229,12 +229,12 @@ int Cn(int x){
     }
 }
 
-int Wn(int x){
+void Wn(int x){
     memset(G_criado,0,sizeof(G_criado));
     for(int i=0;i<x;i++) {
         if(i>0) G_criado[i][i-1] = 1;
         if(i!=x-1) G_criado[i][i+1] = 1;
-        if(i==0) G_criado[i][x-2] = 1; 
+        if(i==0) G_criado[i][x-1] = 1; 
         if(i==x-1) G_criado[i][0] = 1;
         G_criado[x][i] = 1;
         G_criado[i][x] = 1;
@@ -242,7 +242,7 @@ int Wn(int x){
     }
 }
 
-int Kn1_n2(int x,int y){
+void Kn1_n2(int x,int y){
     memset(G_criado,0,sizeof(G_criado));
     int tot=0;
     tot = x+y;
@@ -260,7 +260,7 @@ int Kn1_n2(int x,int y){
 // ESCOLHA DOS GRAFOS
 // =====================================================
 
-int escolha_grafo(){
+void escolha_grafo(){
     int opcubo,cubo,op;
     char tecla;
     bool ok;
@@ -447,7 +447,7 @@ int escolha_grafo(){
 // GRAFOS DE MYCIELSKY
 // =====================================================
 
-int Mycielsky(int w, int num_crom){
+void Mycielsky(int w, int num_crom){
 
     memset(G_criado,0,sizeof(G_criado));
 
@@ -489,7 +489,7 @@ int Mycielsky(int w, int num_crom){
     }
 }
 
-int Call_Mycielsky(){
+void Call_Mycielsky(){
     int w=0,num_crom=0;
     bool ok;
     ok=false;
@@ -519,7 +519,7 @@ int Call_Mycielsky(){
 // PREENCHIMENTO DA MATRIZ
 // =====================================================
 
-int Fill_Matriz(int n){
+void Fill_Matriz(int n){
     
     int x,y;
     bool verificado = false;
@@ -540,7 +540,7 @@ int Fill_Matriz(int n){
 }
 
 
-int Save_File(int n,int M[1010][1010],string filename){
+void Save_File(int n,int M[1010][1010],string filename){
 
     fstream myFile;
     myFile.open(filename, fstream::out);
@@ -559,7 +559,7 @@ int Save_File(int n,int M[1010][1010],string filename){
 // ARQUIVOS
 // =====================================================
 
-int Read_File(string filename){
+void Read_File(string filename){
     
     char c;
     int tmp;
